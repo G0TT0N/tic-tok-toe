@@ -2,43 +2,45 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import './index.css';
 
-class Square extends React.Component {
-    render() {
-        return (
-            <button
-                className="square"
-                onClick={() => this.props.onClick()}
-            >
-                {this.props.value}
-            </button>
-        );
-    }
-}
+let Square = (props) => {
+    return (
+        <button
+            className="square"
+            onClick={props.onClick} /*  вызов функции */
+        >
+            {props.value}
+        </button>
+    );
+};
 
 class Board extends React.Component {
-    constructor(props){
+    constructor(props) {
         super(props);
         this.state = {
             squares: Array(9).fill(null), // заполнить все ячейки массива null
+            xIsNext: true, // изначально первым ходят Х
         }
     }
 
-    handleClick(i){
-        const squares = this.state.squares.slice();
-        squares[i] = 'X';
-        this.setState({squares: squares});
+    handleClick(i) {
+        const squares = this.state.squares.slice(); // сохраняем копию массива squares
+        squares[i] = this.state.xIsNext ? 'X' : 'O'; // если true то Х иначе О
+        this.setState({
+            squares: squares,
+            xIsNext: !this.state.xIsNext, // по клику false
+        }); // перезаписываем стейт новым массивом
     }
 
     renderSquare(i) {
         return <Square
             value={this.state.squares[i]} // установить value ячеек значениями из стейта
-            onClick={() => this.handleClick(i)}
+            onClick={() => this.handleClick(i)} // переносим функцию
         />
 
     }
 
     render() {
-        const status = 'Next player: X';
+        const status = 'Next player: ' + (this.state.xIsNext ? 'X' : 'O'); // если true то ходят Х иначе О
 
         return (
             <div>
@@ -68,7 +70,7 @@ class Game extends React.Component {
         return (
             <div className="game">
                 <div className="game-board">
-                    <Board />
+                    <Board/>
                 </div>
                 <div className="game-info">
                     <div>{/* status */}</div>
@@ -82,6 +84,6 @@ class Game extends React.Component {
 // ========================================
 
 ReactDOM.render(
-    <Game />,
+    <Game/>,
     document.getElementById('root')
 );
